@@ -1,15 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-slim-buster
+# 不要用 Python 3.13，discord.py 目前最穩是 3.12
+FROM python:3.12-slim
 
-# Set the working directory in the container
+# Python 行為設定（Docker 標準）
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
-# Install any needed packages specified in requirements.txt
+# 先複製 requirements，利用 Docker cache
 COPY requirements.txt .
+
+# 安裝依賴
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
+# 再複製其他程式碼
 COPY . .
 
-# Run bot.py when the container launches
+# 啟動 bot
 CMD ["python", "bot.py"]
